@@ -99,7 +99,7 @@ let autoUpdateEnabled = false;
 let updateInterval = null;
 const UPDATE_CHECK_INTERVAL = 60 * 1000; // 1 jam
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/GibranSatrio/Eclipsess/refs/heads/main/eclipse.js"; // GANTI DENGAN URL RAW GITHUB LO!
-const CURRENT_VERSION = "1.0";
+const CURRENT_VERSION = "1.5";
 let updateInProgress = false;
 let updateChannelId = null; // Untuk notifikasi update
 
@@ -1041,6 +1041,14 @@ bot.on("callback_query", async (callbackQuery) => {
 ───────────────────────
 ✶ /convert - reply media
 ✶ /tiktokdl - link
+✶ /gita - gita ai
+✶ /gita help - helping gita
+✶ /gptosscust - ai gpt
+✶ /gptoss help - helping gpt
+✶ /bible - ai bible
+✶ /bible help - helping
+✶ /glm help - helping ai
+
 \`\`\``;
 
       newButtons = [
@@ -1129,7 +1137,7 @@ bot.on("callback_query", async (callbackQuery) => {
 (🎨) ＣＵＳＴＯＭ ＢＵＧ
 ───────────────────────
 Gunakan format:
-/custommulti 628xxx
+/custombug 628xxx
 \`\`\``;
 
       newButtons = [
@@ -3160,6 +3168,148 @@ bot.onText(/^\/resetcd$/, (msg) => {
 });
 
 //=======( TOOLS )=======\\
+// ========== COMMAND GITA AI ==========
+// ========== COMMAND GPTOSS 120B (METODE GET) ==========
+bot.onText(/^\/gptoss (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const userPrompt = match[1];
+
+    await bot.sendMessage(chatId, "🧠 *GPT-OSS 120B mikir...*", { parse_mode: "Markdown" });
+
+    try {
+        // Gunakan metode GET dengan parameter query
+        const apiUrl = 'https://api.siputzx.my.id/api/ai/gptoss120b';
+        const response = await axios.get(apiUrl, {
+            params: {
+                prompt: userPrompt,
+                system: "GW ECLIPSE AI GANTENG", // System prompt khas lu
+                temperature: 0.7
+            }
+        });
+
+        const data = response.data;
+        
+        // Parsing response sesuai struktur yang udah kita lihat
+        if (data?.status && data?.data?.response) {
+            const reply = data.data.response;
+            await bot.sendMessage(chatId, reply, { parse_mode: "Markdown" });
+        } else {
+            // Fallback kalo formatnya beda
+            await bot.sendMessage(chatId, 
+                `⚠️ Format response tidak dikenal:\n\`\`\`${JSON.stringify(data, null, 2)}\`\`\``, 
+                { parse_mode: "Markdown" }
+            );
+        }
+
+    } catch (err) {
+        console.error("GPTOSS ERROR:", err.message);
+        bot.sendMessage(chatId, "❌ Error: " + err.message);
+    }
+});
+
+// Command dengan custom system prompt
+bot.onText(/^\/gptosscust (.+?) \| (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const systemPrompt = match[1]; // Prompt sebelum tanda "|"
+    const userPrompt = match[2];   // Prompt setelah tanda "|"
+
+    await bot.sendMessage(chatId, "🧠 *GPT-OSS 120B (custom mode)...*", { parse_mode: "Markdown" });
+
+    try {
+        const response = await axios.get('https://api.siputzx.my.id/api/ai/gptoss120b', {
+            params: {
+                prompt: userPrompt,
+                system: systemPrompt,
+                temperature: 0.7
+            }
+        });
+
+        const data = response.data;
+        
+        if (data?.status && data?.data?.response) {
+            await bot.sendMessage(chatId, data.data.response, { parse_mode: "Markdown" });
+        } else {
+            await bot.sendMessage(chatId, `⚠️ ${JSON.stringify(data)}`);
+        }
+
+    } catch (err) {
+        console.error("GPTOSS CUST ERROR:", err.message);
+        bot.sendMessage(chatId, "❌ Error: " + err.message);
+    }
+});
+
+// Command help
+bot.onText(/^\/gptoss(?:help)?$/, (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId,
+        "*🧠 GPT-OSS 120B AI*\n\n" +
+        "*Command:*\n" +
+        "• `/gptoss <pertanyaan>` - Mode default\n" +
+        "• `/gptosscust <system> | <pertanyaan>` - Mode custom system\n\n" +
+        "*Contoh:*\n" +
+        "`/gptoss Halo siapa kamu?`\n" +
+        "`/gptosscust Kamu asisten galak | Halo`\n\n" +
+        "_Temperature: 0.7_",
+        { parse_mode: "Markdown" }
+    );
+});
+
+// ========== COMMAND GITA AI (METODE GET) ==========
+bot.onText(/^\/gita (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const userQuestion = match[1]; // Ambil pertanyaan user
+
+    await bot.sendMessage(chatId, "📖 *Gita AI sedang merenung...*", { parse_mode: "Markdown" });
+
+    try {
+        // Gunakan metode GET dengan parameter query 'q'
+        const apiUrl = 'https://api.siputzx.my.id/api/ai/gita';
+        const response = await axios.get(apiUrl, {
+            params: {
+                q: userQuestion // Parameter yang benar adalah 'q'
+            }
+        });
+
+        const result = response.data;
+        
+        // Parsing response sesuai struktur yang udah kita lihat
+        if (result?.status && result?.data) {
+            const reply = result.data; // Jawaban ada di field 'data'
+            await bot.sendMessage(chatId, reply, { parse_mode: "Markdown" });
+        } else {
+            // Fallback kalo formatnya beda
+            await bot.sendMessage(chatId, 
+                `⚠️ Format response tidak dikenal:\n\`\`\`${JSON.stringify(result, null, 2)}\`\`\``, 
+                { parse_mode: "Markdown" }
+            );
+        }
+
+    } catch (err) {
+        console.error("GITA AI ERROR:", err.message);
+        
+        let errorMsg = "❌ Error: " + err.message;
+        if (err.response?.data) {
+            errorMsg += `\nDetail: ${JSON.stringify(err.response.data)}`;
+        }
+        
+        bot.sendMessage(chatId, errorMsg);
+    }
+});
+
+// Command help untuk Gita
+bot.onText(/^\/gita(?:help)?$/, (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId,
+        "*📖 Gita AI - Kebijaksanaan dari Bhagavad Gita*\n\n" +
+        "Tanya apapun tentang kehidupan, karma, dharma, dan filsafat Hindu.\n\n" +
+        "*Cara Pakai:*\n" +
+        "• `/gita Apa itu karma?`\n" +
+        "• `/gita Siapa Krishna?`\n" +
+        "• `/gita Makna hidup`\n\n" +
+        "_Dapatkan jawaban bijak dari kitab suci Bhagavad Gita._",
+        { parse_mode: "Markdown" }
+    );
+});
 
 bot.onText(/^\/tiktokdl (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
@@ -3213,6 +3363,457 @@ async function uploadToCatbox(fileUrl) {
 
   return data;
 }
+
+// ========== COMMAND GLM-4 47B FLASH ==========
+bot.onText(/^\/glm (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const userPrompt = match[1]; // Ambil prompt dari user
+
+    await bot.sendMessage(chatId, "⚡ *GLM-4 47B Flash mikir...*", { parse_mode: "Markdown" });
+
+    try {
+        // Gunakan metode GET dengan parameter query
+        const apiUrl = 'https://api.siputzx.my.id/api/ai/glm47flash';
+        const response = await axios.get(apiUrl, {
+            params: {
+                prompt: userPrompt,
+                system: "Kamu adalah asisten AI yang ramah dan membantu.", // System prompt default
+                temperature: 0.7
+            }
+        });
+
+        const result = response.data;
+        
+        // Parsing response sesuai struktur yang udah kita lihat
+        if (result?.status && result?.data?.response) {
+            const reply = result.data.response;
+            await bot.sendMessage(chatId, reply, { parse_mode: "Markdown" });
+        } else {
+            // Fallback kalo formatnya beda
+            await bot.sendMessage(chatId, 
+                `⚠️ Format response tidak dikenal:\n\`\`\`${JSON.stringify(result, null, 2)}\`\`\``, 
+                { parse_mode: "Markdown" }
+            );
+        }
+
+    } catch (err) {
+        console.error("GLM ERROR:", err.message);
+        
+        let errorMsg = "❌ Error: " + err.message;
+        if (err.response?.data) {
+            errorMsg += `\nDetail: ${JSON.stringify(err.response.data)}`;
+        }
+        
+        bot.sendMessage(chatId, errorMsg);
+    }
+});
+
+// Command dengan custom system prompt
+bot.onText(/^\/glmcust (.+?) \| (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const systemPrompt = match[1]; // System prompt sebelum tanda "|"
+    const userPrompt = match[2];    // User prompt setelah tanda "|"
+
+    await bot.sendMessage(chatId, "⚡ *GLM-4 (custom mode)...*", { parse_mode: "Markdown" });
+
+    try {
+        const response = await axios.get('https://api.siputzx.my.id/api/ai/glm47flash', {
+            params: {
+                prompt: userPrompt,
+                system: systemPrompt,
+                temperature: 0.7
+            }
+        });
+
+        const result = response.data;
+        
+        if (result?.status && result?.data?.response) {
+            await bot.sendMessage(chatId, result.data.response, { parse_mode: "Markdown" });
+        } else {
+            await bot.sendMessage(chatId, `⚠️ ${JSON.stringify(result)}`);
+        }
+
+    } catch (err) {
+        console.error("GLM CUST ERROR:", err.message);
+        bot.sendMessage(chatId, "❌ Error: " + err.message);
+    }
+});
+
+// Command dengan custom temperature
+bot.onText(/^\/glmtemp (\d+\.?\d*) \| (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const temperature = parseFloat(match[1]); // Temperature (0.0 - 1.0)
+    const userPrompt = match[2];
+
+    // Validasi temperature
+    if (temperature < 0 || temperature > 1) {
+        return bot.sendMessage(chatId, "❌ Temperature harus antara 0.0 dan 1.0");
+    }
+
+    await bot.sendMessage(chatId, `⚡ *GLM-4 (temp: ${temperature})...*`, { parse_mode: "Markdown" });
+
+    try {
+        const response = await axios.get('https://api.siputzx.my.id/api/ai/glm47flash', {
+            params: {
+                prompt: userPrompt,
+                system: "Kamu adalah asisten AI yang ramah dan membantu.",
+                temperature: temperature
+            }
+        });
+
+        const result = response.data;
+        
+        if (result?.status && result?.data?.response) {
+            await bot.sendMessage(chatId, result.data.response, { parse_mode: "Markdown" });
+        }
+
+    } catch (err) {
+        bot.sendMessage(chatId, "❌ Error: " + err.message);
+    }
+});
+
+// Command help
+bot.onText(/^\/glm(?:help)?$/, (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId,
+        "*⚡ GLM-4 47B Flash AI*\n\n" +
+        "*Command:*\n" +
+        "• `/glm <pertanyaan>` - Mode default\n" +
+        "• `/glmcust <system> | <pertanyaan>` - Custom system prompt\n" +
+        "• `/glmtemp <0.0-1.0> | <pertanyaan>` - Custom temperature\n\n" +
+        "*Contoh:*\n" +
+        "`/glm Halo siapa kamu?`\n" +
+        "`/glmcust Kamu asisten galak | Halo`\n" +
+        "`/glmtemp 0.9 | Cerita lucu`\n\n" +
+        "_Temperature rendah = lebih fokus, tinggi = lebih kreatif_",
+        { parse_mode: "Markdown" }
+    );
+});
+
+// ========== COMMAND BRAT (METODE GET) ==========
+bot.onText(/^\/brat (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const text = match[1]; // Teks yang akan dijadikan BRAT
+
+    await bot.sendMessage(chatId, "🎨 *Membuat BRAT...*", { parse_mode: "Markdown" });
+
+    try {
+        // Gunakan metode GET dengan parameter query
+        const apiUrl = 'https://api.siputzx.my.id/api/m/brat';
+        const response = await axios.get(apiUrl, {
+            params: {
+                text: text,
+                isAnimated: false, // Default gambar statis
+                delay: 500
+            }
+        });
+
+        const result = response.data;
+        
+        // 🔧 SESUAIKAN PARSING INI DENGAN RESPONSE ASLI DARI API
+        // Contoh: kalo response-nya { status: true, data: { url: "..." } }
+        if (result?.status && result?.data?.url) {
+            const imageUrl = result.data.url;
+            await bot.sendPhoto(chatId, imageUrl, {
+                caption: `✅ BRAT untuk: ${text}`,
+                parse_mode: "Markdown"
+            });
+        } 
+        // Alternatif: kalo response langsung { url: "..." }
+        else if (result?.url) {
+            await bot.sendPhoto(chatId, result.url, {
+                caption: `✅ BRAT untuk: ${text}`,
+                parse_mode: "Markdown"
+            });
+        }
+        else {
+            // Fallback buat debugging
+            await bot.sendMessage(chatId, 
+                `⚠️ Format response tidak dikenal:\n\`\`\`${JSON.stringify(result, null, 2)}\`\`\``, 
+                { parse_mode: "Markdown" }
+            );
+        }
+
+    } catch (err) {
+        console.error("BRAT ERROR:", err.message);
+        
+        let errorMsg = "❌ Error: " + err.message;
+        if (err.response?.data) {
+            errorMsg += `\nDetail: ${JSON.stringify(err.response.data)}`;
+        }
+        
+        bot.sendMessage(chatId, errorMsg);
+    }
+});
+
+// Command BRAT Animasi
+bot.onText(/^\/bratanim (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const text = match[1];
+
+    await bot.sendMessage(chatId, "🎬 *Membuat animasi BRAT...*", { parse_mode: "Markdown" });
+
+    try {
+        const response = await axios.get('https://api.siputzx.my.id/api/m/brat', {
+            params: {
+                text: text,
+                isAnimated: true,
+                delay: 500 // Default delay
+            }
+        });
+
+        const result = response.data;
+        
+        if (result?.status && result?.data?.url) {
+            // Asumsi API return video untuk animasi
+            await bot.sendVideo(chatId, result.data.url, {
+                caption: `✅ Animasi BRAT\nTeks: ${text}\nDelay: 500ms`,
+                parse_mode: "Markdown"
+            });
+        } else if (result?.url) {
+            await bot.sendVideo(chatId, result.url, {
+                caption: `✅ Animasi BRAT\nTeks: ${text}`,
+                parse_mode: "Markdown"
+            });
+        } else {
+            await bot.sendMessage(chatId, `⚠️ ${JSON.stringify(result)}`);
+        }
+
+    } catch (err) {
+        bot.sendMessage(chatId, "❌ Error: " + err.message);
+    }
+});
+
+// Command BRAT dengan custom delay
+bot.onText(/^\/bratanim (\d+) (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const delay = parseInt(match[1]); // Delay dalam ms
+    const text = match[2];
+
+    await bot.sendMessage(chatId, `🎬 *Membuat animasi BRAT (delay ${delay}ms)...*`, { parse_mode: "Markdown" });
+
+    try {
+        const response = await axios.get('https://api.siputzx.my.id/api/m/brat', {
+            params: {
+                text: text,
+                isAnimated: true,
+                delay: delay
+            }
+        });
+
+        const result = response.data;
+        
+        if (result?.status && result?.data?.url) {
+            await bot.sendVideo(chatId, result.data.url, {
+                caption: `✅ Animasi BRAT\nTeks: ${text}\nDelay: ${delay}ms`,
+                parse_mode: "Markdown"
+            });
+        }
+
+    } catch (err) {
+        bot.sendMessage(chatId, "❌ Error: " + err.message);
+    }
+});
+
+// Command help
+bot.onText(/^\/brat(?:help)?$/, (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId,
+        "*🎨 BRAT Generator*\n\n" +
+        "*Command:*\n" +
+        "• `/brat <teks>` - Gambar statis\n" +
+        "• `/bratanim <teks>` - Animasi (delay 500ms)\n" +
+        "• `/bratanim <delay> <teks>` - Animasi custom delay\n\n" +
+        "*Contoh:*\n" +
+        "`/brat Hello World`\n" +
+        "`/bratanim 300 Halo bre`\n\n" +
+        "_Delay dalam milidetik_",
+        { parse_mode: "Markdown" }
+    );
+});
+
+// ========== COMMAND BIBLE AI ==========
+bot.onText(/^\/bible (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const userQuestion = match[1]; // Pertanyaan user
+
+    await bot.sendMessage(chatId, "📖 *BibleAI sedang mencari jawaban...*", { parse_mode: "Markdown" });
+
+    try {
+        // Panggil API dengan metode GET
+        const apiUrl = 'https://api.siputzx.my.id/api/ai/bibleai';
+        const response = await axios.get(apiUrl, {
+            params: {
+                question: userQuestion,
+                translation: 'ESV' // Bisa diganti dengan kode terjemahan lain (TB, NIV, dll)
+            }
+        });
+
+        const result = response.data;
+        
+        // Parsing response sesuai struktur yang kita lihat
+        if (result?.status && result?.data) {
+            const bibleData = result.data;
+            
+            // Format jawaban utama
+            let reply = `*📖 BibleAI - ${bibleData.translation}*\n\n`;
+            reply += `*Pertanyaan:* ${bibleData.question}\n\n`;
+            reply += `*Jawaban:*\n${bibleData.results.answer}\n\n`;
+            
+            // Tambahkan ayat-ayat terkait (ambil 5 ayat pertama biar ga kepanjangan)
+            if (bibleData.results.sources && bibleData.results.sources.length > 0) {
+                reply += `*Ayat-ayat Terkait:*\n`;
+                const verses = bibleData.results.sources
+                    .filter(s => s.type === 'verse')
+                    .slice(0, 5); // Ambil 5 ayat pertama
+                
+                verses.forEach(v => {
+                    reply += `• ${v.splitReference?.refLong || v.text}: ${v.text}\n`;
+                });
+            }
+            
+            // Info tambahan
+            reply += `\n_© ${bibleData.results.metadata?.copyright || 'Sumber Alkitab'}_`;
+            
+            await bot.sendMessage(chatId, reply, { parse_mode: "Markdown" });
+            
+            // Opsi: Kirim juga sumber tambahan (buku, artikel) sebagai pesan terpisah
+            if (bibleData.results.sources && bibleData.results.sources.length > 0) {
+                const books = bibleData.results.sources.filter(s => s.type === 'book' || s.type === 'article').slice(0, 3);
+                if (books.length > 0) {
+                    let sourcesMsg = `*📚 Sumber Bacaan Lebih Lanjut:*\n`;
+                    books.forEach(b => {
+                        sourcesMsg += `• *${b.title}*${b.author ? ` oleh ${b.author}` : ''}\n`;
+                        if (b.url) sourcesMsg += `  ${b.url}\n`;
+                    });
+                    await bot.sendMessage(chatId, sourcesMsg, { parse_mode: "Markdown" });
+                }
+            }
+            
+        } else {
+            await bot.sendMessage(chatId, 
+                `⚠️ Format response tidak dikenal:\n\`\`\`${JSON.stringify(result, null, 2)}\`\`\``, 
+                { parse_mode: "Markdown" }
+            );
+        }
+
+    } catch (err) {
+        console.error("BIBLEAI ERROR:", err.message);
+        
+        let errorMsg = "❌ Error: " + err.message;
+        if (err.response?.data) {
+            errorMsg += `\nDetail: ${JSON.stringify(err.response.data)}`;
+        }
+        
+        bot.sendMessage(chatId, errorMsg);
+    }
+});
+
+// Command untuk pilih terjemahan
+bot.onText(/^\/bible (.+?) \| (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const translation = match[1].toUpperCase(); // Kode terjemahan (ESV, NIV, TB, dll)
+    const userQuestion = match[2];
+
+    await bot.sendMessage(chatId, `📖 *BibleAI (${translation}) sedang mencari...*`, { parse_mode: "Markdown" });
+
+    try {
+        const response = await axios.get('https://api.siputzx.my.id/api/ai/bibleai', {
+            params: {
+                question: userQuestion,
+                translation: translation
+            }
+        });
+
+        const result = response.data;
+        
+        if (result?.status && result?.data) {
+            const bibleData = result.data;
+            let reply = `*📖 BibleAI - ${bibleData.translation}*\n\n`;
+            reply += `*Pertanyaan:* ${bibleData.question}\n\n`;
+            reply += `*Jawaban:*\n${bibleData.results.answer}\n\n`;
+            
+            await bot.sendMessage(chatId, reply, { parse_mode: "Markdown" });
+        }
+
+    } catch (err) {
+        bot.sendMessage(chatId, "❌ Error: " + err.message);
+    }
+});
+
+// Command help
+bot.onText(/^\/bible(?:help)?$/, (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId,
+        "*📖 BibleAI - Tanya Jawab Alkitab*\n\n" +
+        "*Cara Pakai:*\n" +
+        "• `/bible Apa itu iman?` (default: ESV)\n" +
+        "• `/bible TB | Apa itu kasih?` (pilih terjemahan)\n\n" +
+        "*Kode Terjemahan Populer:*\n" +
+        "• `ESV` - English Standard Version\n" +
+        "• `NIV` - New International Version\n" +
+        "• `KJV` - King James Version\n" +
+        "• `TB` - Terjemahan Baru (Indonesia)\n\n" +
+        "_Dapatkan jawaban lengkap dengan ayat-ayat terkait._",
+        { parse_mode: "Markdown" }
+    );
+});
+
+// ========== COMMAND GEMINI AI ==========
+bot.onText(/^\/geminiai (.+)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const prompt = match[1]; // Ambil teks setelah command
+
+    await bot.sendMessage(chatId, "🧠 *Gemini mikir...*", { parse_mode: "Markdown" });
+
+    try {
+        const API_URL = 'https://api.siputzx.my.id/api/ai/gemini';
+        
+        const { data } = await axios.post(API_URL, {
+            message: prompt  // atau coba "text": prompt, atau "prompt": prompt
+        });
+
+        // Parse response (sesuaiin sama struktur API-nya nanti)
+        let response = "Maaf, ga dapet jawaban.";
+        if (data?.status && data?.data?.response) {
+            response = data.data.response;
+        } else if (data?.response) {
+            response = data.response;
+        } else if (data?.result) {
+            response = data.result;
+        } else if (data?.message) {
+            response = data.message;
+        } else {
+            response = JSON.stringify(data); // fallback
+        }
+
+        await bot.sendMessage(chatId, response, { parse_mode: "Markdown" });
+
+    } catch (err) {
+        console.error("GEMINI ERROR:", err.message);
+        
+        let errorMsg = "❌ Gagal panggil Gemini.";
+        if (err.response?.status === 400) {
+            errorMsg = "⚠️ Parameter API salah. Coba cek dokumentasinya.";
+        } else if (err.response?.data) {
+            errorMsg = `⚠️ Error: ${JSON.stringify(err.response.data)}`;
+        }
+        
+        bot.sendMessage(chatId, errorMsg);
+    }
+});
+
+// Command help
+bot.onText(/^\/gemini(?:help)?$/, (msg) => {
+    const chatId = msg.chat.id;
+    bot.sendMessage(chatId,
+        "*🤖 Gemini AI Bot*\n\n" +
+        "• `/geminiai Halo apa kabar?`\n" +
+        "• `/geminiai Jelaskan tentang AI`\n\n" +
+        "Langsung aja tanya apa pun!",
+        { parse_mode: "Markdown" }
+    );
+});
 
 bot.onText(/\/convert/, async (msg) => {
   const chatId = msg.chat.id;
