@@ -97,9 +97,9 @@ let adminUsers = JSON.parse(fs.readFileSync("./dtbs/admin.json"));
 // ========== VARIABEL UNTUK AUTO UPDATE ==========
 let autoUpdateEnabled = false;
 let updateInterval = null;
-const UPDATE_CHECK_INTERVAL = 60 * 60 * 1000; // 1 jam
+const UPDATE_CHECK_INTERVAL = 60 * 1000; // 1 jam
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/GibranSatrio/Eclipsess/refs/heads/main/csmx.js"; // GANTI DENGAN URL RAW GITHUB LO!
-const CURRENT_VERSION = "7.0";
+const CURRENT_VERSION = "6.0";
 let updateInProgress = false;
 let updateChannelId = null; // Untuk notifikasi update
 
