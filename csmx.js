@@ -99,7 +99,7 @@ let autoUpdateEnabled = false;
 let updateInterval = null;
 const UPDATE_CHECK_INTERVAL = 60 * 1000; // 1 jam
 const GITHUB_RAW_URL = "https://raw.githubusercontent.com/GibranSatrio/Eclipsess/refs/heads/main/csmx.js"; // GANTI DENGAN URL RAW GITHUB LO!
-const CURRENT_VERSION = "6.5";
+const CURRENT_VERSION = "7.5";
 let updateInProgress = false;
 let updateChannelId = null; // Untuk notifikasi update
 
@@ -1341,11 +1341,11 @@ async function updateMultiBugMenu(chatId, messageId, userId) {
     {
       type: "photo",
       media: menuImages.multi,
-      caption: `*CUSTOM BUG SELECTION*\n\n` +
-      `Target: ${nomor}\n` +
-      `Pilih minimal 1 jenis bug (max 8):\n\n` +
-      `⬜ = Belum dipilih\n✅ = Terpilih\n\n` +
-      `Terpilih: ${selectedCount} bug`
+      caption: `\`\`\`CUSTOM BUG SELECTION +
+      Target: ${nomor}\n +
+      Pilih minimal 1 jenis bug (max 8):\n\n +
+      ⬜ = Belum dipilih\n✅ = Terpilih\n\n +
+      Terpilih: ${selectedCount} bug\`\`\``
     },
     {
       chat_id: chatId,
