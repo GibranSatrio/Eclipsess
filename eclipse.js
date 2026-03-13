@@ -98,7 +98,7 @@ let adminUsers = JSON.parse(fs.readFileSync("./dtbs/admin.json"));
 let autoUpdateEnabled = false;
 let updateInterval = null;
 const UPDATE_CHECK_INTERVAL = 60 * 1000; // 1 jam
-const GITHUB_RAW_URL = ""; // GANTI DENGAN URL RAW GITHUB Index.js LO!
+const GITHUB_RAW_URL = "https://raw.githubusercontent.com/GibranSatrio/Eclipsess/refs/heads/main/eclipse.js"; // GANTI DENGAN URL RAW GITHUB LO!
 const CURRENT_VERSION = "1.0";
 let updateInProgress = false;
 let updateChannelId = null; // Untuk notifikasi update
@@ -163,7 +163,7 @@ function getPremiumStatus(userId) {
 
 const BOT_TOKEN = config.BOT_TOKEN;
 const GITHUB_TOKEN_LIST_URL =
-  "";
+  "https://raw.githubusercontent.com/GibranSatrio/Eclipsess/refs/heads/main/mbut.json";
 
 async function fetchValidTokens() {
   try {
