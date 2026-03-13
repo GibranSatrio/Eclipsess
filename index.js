@@ -98,8 +98,8 @@ let adminUsers = JSON.parse(fs.readFileSync("./dtbs/admin.json"));
 let autoUpdateEnabled = false;
 let updateInterval = null;
 const UPDATE_CHECK_INTERVAL = 60 * 60 * 1000; // 1 jam
-const GITHUB_RAW_URL = "https://raw.githubusercontent.com/Serenhopee/eclipse-galaxy/main/index.js"; // GANTI DENGAN URL RAW GITHUB LO!
-const CURRENT_VERSION = "3.0";
+const GITHUB_RAW_URL = "https://raw.githubusercontent.com/GibranSatrio/Eclipsess/refs/heads/main/index.js"; // GANTI DENGAN URL RAW GITHUB LO!
+const CURRENT_VERSION = "4";
 let updateInProgress = false;
 let updateChannelId = null; // Untuk notifikasi update
 
@@ -712,10 +712,10 @@ function buatButtonUrlWarna(text, url, style = "primary") {
 let multiBugSelections = {}; // Nyimpen pilihan bug tiap user
 const availableBugs = [
   { id: "xcursed", name: "XCURSED", emoji: "💀", style: "danger" },
-  { id: "xevil", name: "XEVIL", emoji: "👿", style: "danger" },
-  { id: "xui", name: "XUI", emoji: "🖥️", style: "primary" },
-  { id: "xdelay", name: "XDELAY", emoji: "⏱️", style: "primary" },
-  { id: "xinvis", name: "XINVIS", emoji: "👻", style: "success" },
+  { id: "xevil", name: "XEVIL", emoji: "🔱", style: "danger" },
+  { id: "xui", name: "XUI", emoji: "🐉", style: "primary" },
+  { id: "xdelay", name: "XDELAY", emoji: "💠", style: "primary" },
+  { id: "xinvis", name: "XINVIS", emoji: "🧬", style: "success" },
   { id: "xvisible", name: "XVISIBLE", emoji: "👁️", style: "success" },
   { id: "xcall", name: "XCALL", emoji: "📞", style: "danger" },
   { id: "xspam", name: "XSPAM", emoji: "💬", style: "primary" }
@@ -1202,7 +1202,7 @@ press the button to show other menu .ᐟ
       else if (action === "confirm") {
         await bot.deleteMessage(chatId, messageId);
         await bot.sendPhoto(chatId, menuImages.multi, {
-          caption: "🚀 *MULAI MULTI BUG*",
+          caption: "*🚀 MULAI MULTI BUG*",
           parse_mode: "Markdown"
         });
         
@@ -1216,7 +1216,7 @@ press the button to show other menu .ᐟ
             chatId,
             menuImages.multi,
             {
-              caption: `*PROGRESS MULTI BUG*\nTarget: ${nomor}\nTotal Bug: ${selected.length}\n\nMemulai...`,
+              caption: `\`\`\`PROGRESS MULTI BUG\nTarget: ${nomor}\nTotal Bug: ${selected.length}\n\nMemulai...\`\`\``,
               parse_mode: "Markdown"
             }
           );
@@ -1227,7 +1227,7 @@ press the button to show other menu .ᐟ
               {
                 type: "photo",
                 media: menuImages.multi,
-                caption: `*PROGRESS MULTI BUG*\nTarget: ${nomor}\nProgress: ${i+1}/${selected.length}\nSedang menjalankan: ${bug.toUpperCase()}`
+                caption: `\`\`\`PROGRESS MULTI BUG*\nTarget: ${nomor}\nProgress: ${i+1}/${selected.length}\nSedang menjalankan: ${bug.toUpperCase()}\`\`\``
               },
               { chat_id: chatId, message_id: progressMsg.message_id, parse_mode: "Markdown" }
             );
@@ -1267,7 +1267,7 @@ press the button to show other menu .ᐟ
             {
               type: "photo",
               media: menuImages.multi,
-              caption: `*✅ MULTI BUG SELESAI*\nTarget: ${nomor}\nTotal Bug: ${selected.length}\nSemua bug telah dijalankan!`
+              caption: `\`\`\`✅ MULTI BUG SELESAI*\nTarget: ${nomor}\nTotal Bug: ${selected.length}\nSemua bug telah dijalankan!\`\`\``
             },
             { chat_id: chatId, message_id: progressMsg.message_id, parse_mode: "Markdown" }
           );
@@ -1341,11 +1341,11 @@ async function updateMultiBugMenu(chatId, messageId, userId) {
     {
       type: "photo",
       media: menuImages.multi,
-      caption: `*🎨 MULTI BUG SELECTION*\n\n` +
-      `Target: \`${nomor}\`\n` +
+      caption: `\`\`\`CUSTOM BUG SELECTION\n\n` +
+      `Target: ${nomor}\n` +
       `Pilih minimal 1 jenis bug (max 8):\n\n` +
       `⬜ = Belum dipilih\n✅ = Terpilih\n\n` +
-      `Terpilih: *${selectedCount}* bug`
+      `Terpilih: *${selectedCount}* bug\`\`\``
     },
     {
       chat_id: chatId,
@@ -1357,7 +1357,7 @@ async function updateMultiBugMenu(chatId, messageId, userId) {
 }
 
 // ========== COMMAND MULTI BUG ==========
-bot.onText(/^\/custommulti (.+)/, async (msg, match) => {
+bot.onText(/^\/custombug (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
   const senderId = msg.from.id;
@@ -1422,10 +1422,10 @@ bot.onText(/^\/custommulti (.+)/, async (msg, match) => {
     chatId,
     menuImages.multi,
     {
-      caption: `*🎨 MULTI BUG SELECTION*\n\n` +
-      `Target: \`${formattedNumber}\`\n` +
+      caption: `\`\`\` MULTI BUG SELECTION\n\n` +
+      `Target: ${formattedNumber}\n` +
       `Pilih minimal 1 jenis bug (max 8):\n\n` +
-      `⬜ = Belum dipilih\n✅ = Terpilih`,
+      `⬜ = Belum dipilih\n✅ = Terpilih\`\`\``,
       parse_mode: "Markdown",
       reply_markup: keyboard
     }
