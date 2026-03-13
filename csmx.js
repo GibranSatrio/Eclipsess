@@ -1345,7 +1345,8 @@ async function updateMultiBugMenu(chatId, messageId, userId) {
       `Target: ${nomor}\n` +
       `Pilih minimal 1 jenis bug (max 8):\n\n` +
       `⬜ = Belum dipilih\n✅ = Terpilih\n\n` +
-      `Terpilih: *${selectedCount}* bug\`\`\``
+      `Terpilih: ${selectedCount} bug
+      \`\`\``
     },
     {
       chat_id: chatId,
