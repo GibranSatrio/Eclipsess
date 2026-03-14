@@ -1048,6 +1048,9 @@ bot.on("callback_query", async (callbackQuery) => {
 ✶ /bible - ai bible
 ✶ /bible help - helping
 ✶ /glm help - helping ai
+✶ /trackipcyber - track ip
+✶ /trackip - track ip akurat 90℅
+✶ /hd - hd kan foti
 
 \`\`\``;
 
@@ -3632,6 +3635,144 @@ bot.onText(/^\/brat(?:help)?$/, (msg) => {
     );
 });
 
+bot.onText(/^\/(trackipcyber|doxipcyber)(?:\s+(.+))?/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const userId = msg.from.id.toString();
+  const command = match[1];
+  const ip = match[2]?.trim(); // bisa kosong
+
+  try {
+    // kalau ip kosong, ambil IP publik si user
+    const targetIP = ip || (await axios.get("https://api.ipify.org?format=json")).data.ip;
+
+    await bot.sendMessage(chatId, `🌍 Mengecek informasi IP *${targetIP}*...`, {
+      parse_mode: "Markdown",
+    });
+
+    // Ambil data IP dari ipwho.is
+    const { data: res } = await axios.get(`https://ipwho.is/${targetIP}`);
+
+    if (!res.success) {
+      return bot.sendMessage(chatId, `❌ Gagal menemukan informasi untuk IP *${targetIP}*`, {
+        parse_mode: "Markdown",
+      });
+    }
+
+    // Format hasil
+    const info = `
+*📡 Informasi IP*
+• IP: ${res.ip || "N/A"}
+• Type: ${res.type || "N/A"}
+• Country: ${res.country || "N/A"} ${res.flag?.emoji || ""}
+• Region: ${res.region || "N/A"}
+• City: ${res.city || "N/A"}
+• Latitude: ${res.latitude || "N/A"}
+• Longitude: ${res.longitude || "N/A"}
+• ISP: ${res.connection?.isp || "N/A"}
+• Org: ${res.connection?.org || "N/A"}
+• Domain: ${res.connection?.domain || "N/A"}
+• Timezone: ${res.timezone?.id || "N/A"}
+• Local Time: ${res.timezone?.current_time || "N/A"}
+`;
+
+    if (res.latitude && res.longitude) {
+      await bot.sendLocation(chatId, res.latitude, res.longitude);
+    }
+
+    await bot.sendMessage(chatId, info, { parse_mode: "Markdown" });
+  } catch (err) {
+    console.error("TrackIP Error:", err);
+    bot.sendMessage(chatId, `❌ Error: Tidak dapat mengambil data IP.`, {
+      parse_mode: "Markdown",
+    });
+  }
+});
+
+bot.onText(/^\/trackip(?:\s+(.+))?$/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const ip = (match[1] || "").trim();
+
+  if (!ip) return bot.sendMessage(chatId, "⚠️ Contoh:\n/trackip 8.8.8.8");
+
+  bot.sendMessage(chatId, "🛰 Sedang melacak IP...");
+
+  try {
+    const { data } = await axios.get(`http://ip-api.com/json/${ip}`);
+    if (data.status !== "success") throw new Error("IP tidak ditemukan");
+
+    const teks = `
+🌍 *IP FOUND!*
+
+• *IP:* ${data.query}
+• *Country:* ${data.country}
+• *City:* ${data.city}
+• *ISP:* ${data.isp}
+
+📍 [Lihat di Maps](https://www.google.com/maps?q=${data.lat},${data.lon})
+    `;
+    await bot.sendMessage(chatId, teks, { parse_mode: "Markdown" });
+  } catch (err) {
+    console.error(err);
+    bot.sendMessage(chatId, "❌ Error: " + err.message);
+  }
+});
+
+bot.onText(/^\/hd$/, async (msg) => {
+  const chatId = msg.chat.id;
+
+  // HARUS reply foto
+  if (!msg.reply_to_message || !msg.reply_to_message.photo) {
+    return bot.sendMessage(
+      chatId,
+      "⚠️ Reply foto dulu baru ketik /hd cok."
+    );
+  }
+
+  try {
+    await bot.sendMessage(chatId, "⏳ Lagi ng-HD foto lu bre...");
+
+    // Ambil foto resolusi tertinggi
+    const photo = msg.reply_to_message.photo.pop();
+    const file = await bot.getFile(photo.file_id);
+    const fileUrl = `https://api.telegram.org/file/bot${bot.token}/${file.file_path}`;
+
+    // Download foto dari Telegram
+    const dl = await axios.get(fileUrl, { responseType: "arraybuffer" });
+    const buffer = Buffer.from(dl.data);
+
+    // Upload ke tmpfiles
+    const FormData = require("form-data");
+    const form = new FormData();
+    form.append("file", buffer, "image.jpg");
+
+    const upload = await axios.post("https://tmpfiles.org/api/v1/upload", form, {
+      headers: form.getHeaders(),
+    });
+
+    const link = upload.data.data.url.replace("tmpfiles.org/", "tmpfiles.org/dl/");
+
+    // API HD
+    const hd = await axios.get(
+      `https://api.nekolabs.web.id/tools/pxpic/restore?imageUrl=${encodeURIComponent(link)}`
+    );
+
+    if (!hd.data.success) {
+      throw new Error("Gagal HD cok.");
+    }
+
+    const result = hd.data.result;
+
+    // Kirim hasil HD
+    await bot.sendPhoto(chatId, result, {
+      caption: `✅ Foto berhasil di-HD cok!\n${result}`,
+      parse_mode: "HTML",
+    });
+
+  } catch (err) {
+    console.error("HD ERROR:", err);
+    bot.sendMessage(chatId, "❌ Error cok, fotonya ga bisa di-HD.");
+  }
+});
 // ========== COMMAND BIBLE AI ==========
 bot.onText(/^\/bible (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
